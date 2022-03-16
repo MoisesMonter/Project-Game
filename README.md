@@ -1,5 +1,6 @@
 # Project-Game
 <h1>Projeto de POO da Faculdade.</h1>
+<h4>Aluno: Moises Alexandre Monteiro Araujo. ADS-2021.2</4>
 <p>Todas as pastas interligam entre si.
 mas existe uma que em especifico inicia.
 abra o LinkStart.py</p>
