@@ -44,4 +44,3 @@ if __name__ == "__main__":
             del Dictlocal
             Dictlocal = {}
             Dictlocal = Person(language,persona).alocate_info()
-        
