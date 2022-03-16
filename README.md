@@ -6,4 +6,5 @@ abra o LinkStart.py</p>
 
 <img alt='SomePicture.png' src="https://github.com/MoisesMonter/Project-Game/blob/main/UML%20PROJETO%20GAME.png" style='max-width: 75%;'/>
 </br>
-<p>Confira: </p><a href="https://lucid.app/lucidchart/f3c8ee77-f5ad-4758-ae28-d24d46b5fdb1/edit?invitationId=inv_53cde881-f8a7-4234-ac5a-a4a715691f69", target="_blank">Link to see</a>
+<p>Confira:<a href="https://lucid.app/lucidchart/f3c8ee77-f5ad-4758-ae28-d24d46b5fdb1/edit?invitationId=inv_53cde881-f8a7-4234-ac5a-a4a715691f69" target="_blank" rel="noopener noreferrer"  >Link to see</a></p>>
+>
