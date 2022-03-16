@@ -14,7 +14,7 @@ if __name__ == "__main__":
     language = MenuTerminal(Config_Menu().loading_lang()).Language() #informação 0/1 é importante para declarar que o jogo inicialize já PT/ING
 
      #"FAÇA ISSO?" ele abre um menu com as informações necessárias
-    persona = int(Initial_Menu(0).Do_it())
+    persona = int(Initial_Menu(0,0).Do_it())
     Dictlocal = {}
     Dictlocal = Person(language,persona).alocate_info()
     if persona <= 0:
@@ -23,18 +23,24 @@ if __name__ == "__main__":
      #um Dicionario vasio
  #pegar todas as informações e tranformar em um dicts
     while  0 < persona:
+        Dictlocal = Person(language,persona).alocate_info()
         if Dictlocal['Point'] == '0':
-            Dictlocal = PointHistory(language,**Dictlocal).historypoint()
+            Dictlocal = PointHistory(language,persona,**Dictlocal).historypoint()
         if Dictlocal['Point'] == '1':
-            Dictlocal = PointHistory(language,**Dictlocal).historypoint()
+            Dictlocal = PointHistory(language,persona,**Dictlocal).historypoint()
+        if Dictlocal['Point'] == '2':
+            Dictlocal = PointHistory(language,persona,**Dictlocal).historypoint()
+        if Dictlocal['Point'] == '3':
+            Dictlocal = PointHistory(language,persona,**Dictlocal).historypoint()
+        
         MenuTerminal(language).__str__('linkstart')
         x = int(input())
         if  x == int(1):
-            Dictlocal = Person(language,persona).save_info(**Dictlocal)
+            Dictlocal = Person(language,persona)#BP_Dell leva para um algoritimo que irá "deletar" trocando valor do nome para "None" acossiando a um item nulo(**Dictlocal)
         if  x == int(2):
             Dictlocal = Person(language,persona).save_info(**Dictlocal)
             MenuTerminal(0).limpesa_global()
-            persona = int(Initial_Menu(0).Do_it())
+            persona = int(Initial_Menu(0,persona).Do_it())
             del Dictlocal
             Dictlocal = {}
             Dictlocal = Person(language,persona).alocate_info()

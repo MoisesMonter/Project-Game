@@ -2,20 +2,20 @@ from Terminal import*
 from Terminal import MenuTerminal
 from ballon import*
 from config import Config_Menu
-       
-class Person(MenuTerminal):
+
+class Person(MenuTerminal): #Essa primeira classe fica responsável por dar save nas informações alteradas, interagindo com o arquivo salvo no local do personagem
     def __init__(self,language,local_save):
         MenuTerminal.__init__(self,language)
-        self.local_save = local_save
-        self.local= 'save/save'+str(local_save)+'.txt'
+        self.local_save = local_save #posição do save do personagem
+        self.local= 'save/save'+str(local_save)+'.txt' #ambiente de alteração para pegar os arquivos  cujo irá ser manipulados
         self.all = {}
         self.persona_info={}
         self.information_user =[]
         self.listk=['Point','Nick','Gen','Lvl','Xp','Hp','Mp','For','Int','Def','helmet','armor','legs','left-hand','right-hand','amulet']
         self.listv=['POINT=','Nick=','Gen=','LVL=','XP=','HP=','MP=','FOR=','INT=','DEF=','helmet=','armor=','legs=','left-hand=','right-hand=','Amulet=']
 
-    def __str__(self,string):
-        MenuTerminal(self.language).__str__(string)
+    #def __str__(self,string):
+    #    MenuTerminal(self.language).__str__(string)
 
     def Open_and_read(self):    #Ler arquivo. por isso >>> mode='r'
         with open(self.local,mode='r',encoding='utf-8') as save_local:
@@ -48,14 +48,14 @@ class Person(MenuTerminal):
 
     def saved_info(self):
         
-        self.Open_and_read()# 
+        self.Open_and_read() 
         loop =len(self.information_user)
         for x in range(0,loop,1):
             boop = True
             for k,v,k1,v1 in zip(self.persona_info.keys(),self.persona_info.values(),self.all.keys(),self.all.values()):
-                if v1 in self.information_user[x] and boop == True:
-                    self.information_user.pop(x)
-                    self.information_user.insert(x,str(v1)+str(v)+'\n')
+                if v1 in self.information_user[x] and boop == True: #define se os valores de uma lista e outra colidem. 
+                    self.information_user.pop(x) #colidinhdo, vai trocar apenas a posição necessaria.
+                    self.information_user.insert(x,str(v1)+str(v)+'\n') #somente os valores serão alterados enquanto as keys serão permanecidas iguais e diferentes ao mesmo tempo.
                     #self.information_user = str(v1)+str(v)
                     boop = False
 
@@ -86,7 +86,7 @@ class Person(MenuTerminal):
                 if value in comparation:
                     self.all[key] = str(comparation[len(value):-1])
 
-class Set(MenuTerminal):
+class Set(Person,MenuTerminal):
     glogal_itens_name={
         'None':'None',
         '8_helm0': 'chapel de couro',
@@ -417,15 +417,16 @@ class Set(MenuTerminal):
         #itens
     } #self.glogal_itens_name[item]
 
-    def __init__(self,language,**Dictinfo):
+    def __init__(self,language,local_save,**Dictinfo):
+        Person.__init__(self,language,local_save)
         MenuTerminal.__init__(self,language)
         self.dictinfo = Dictinfo
         self.x = [ '8','5','2','7','4','6']
         self.y = [ 'helmet','armor','legs','amulet','left-hand','right-hand']
         self.z=['Point','Nick','Gen','Lvl','Xp','Hp','Mp','For','Int','Def']
 
-    def __str__(self,string):
-        MenuTerminal(self.language).__str__(string)
+    #def __str__(self,string):
+    #    MenuTerminal(self.language).__str__(string)
 
     def take(self,item):
         for i in range(0,len(self.x),1):
@@ -433,31 +434,33 @@ class Set(MenuTerminal):
                 self.SET(item,i)
                 return self.dictinfo
         self.BP_direct(item)
+        
         return self.dictinfo
         
     def acess_set(self):
         lista = [i for i in self.dictinfo.keys()]
+        
         cont=int(0)
         for lista in self.y:
             print('\n[',cont,']',lista,':\t',self.glogal_itens_name[self.dictinfo[lista]],end='')
             cont=int(cont)+int(1)
-        number= int(input("\nDigite o numero da tabela para alterar item <Digite (-1) Para Sair>:\n"))
+        number= int(input("\nSelect: <Digite (-1) Para Sair>:\n"))
         if number == int(-1) :
             return self.dictinfo
         self.acess_set1(number)
         
 
 
-    def acess_set1(self,number): 
+    def acess_set1(self,number):  #Mostrar  item da mochila e selecionar algum desses itens
         contador = int(1)#contador que servirá para medir o tamanho da mochila
         lista = [i for i in self.dictinfo.keys()] #lista especifica para percorres
-        for i in lista[16:]:
+        for i in lista[16:]: #Lista para mostrar os intens da mochila com seu real nome invés de codigo de item do sistema
             print("{}={}".format(i,self.glogal_itens_name[self.dictinfo[i]])) #mostrar itens
             contador=int(contador)+int(1)                #contador está reponsável pelas casa que tem na lista do backpack de itens, no caso o tamanho da backpack
         select = self.recursive(contador) #select éresponsável de receber o valor da recursividade
         self.comparation(select,number)#>item da mochila #number é o numero do set
 
-    def comparation(self,select,number): #select=backpack.number=set
+    def comparation(self,select,number): #select=backpack.number=set <= Serve para ver se os intens podem ser equipaveis em seus locais de uso..ex: capacete na cabeça....
         take_item = str(self.dictinfo[str(select)+'item']) #seleciona item da mochila
         cont_position_set=''
         for i in range(0,len(self.x),1): #pegar item do set
@@ -467,8 +470,9 @@ class Set(MenuTerminal):
         for i in self.x: #possiveis espaço que podem ser preenchidos 2=lefs,8=helmet,7=amulet...
             if take_item[0] in i: #diz se o item pode ser trocado sim ou não.. se sim, trocar e voltar para o set. Mostrar erro e voltar ao set
                 if str(i)  in str(take_item[0]):
-                    self.update_status_item(take_item,set_item)#-set,+backpack
+                    self.update_status_item(set_item,take_item)#-set,+backpack
                     self.dictinfo.update({str(select)+'item': set_item , cont_position_set:take_item})
+                    self.save_info(**self.dictinfo)
                     return self.dictinfo 
                 elif str(i)  not in str(take_item[0]):
                     self.__str__('_comparation0')
@@ -483,27 +487,42 @@ class Set(MenuTerminal):
             self.acess_set()
         self.recursive(cont)
 
+    def broken_item(self,ty): #quebrar item do usuario que esteja impunhando
+        if ty =='helmet' or ty == 'armor' or ty == 'legs' or ty == 'amulet' or ty == 'left-hand' or ty == 'right-hand':
+            if self.dictinfo[ty] == 'None':
+                pass
+            else:
+                self.update_status_item(self.dictinfo[ty],'None') #filtra o poder de dano fisico...magico e etc...
+                self.dictinfo[ty]='None' 
+                self.save_info(**self.dictinfo)
+        return self.dictinfo
+
     def SET(self,item,i):
         if self.dictinfo[self.y[i]]=='None':
             self.update_status_item('None',item)
             self.dictinfo[self.y[i]] = item #self.glogal_itens_name[item]
+            self.save_info(**self.dictinfo)
         else:
             x = input("Deseja jogar na mochila?(Y/N):").lower()
             if x=='y' or x =='ye' or x =='yes' or x=='yep':
                 self.BP_direct(item)
+                self.save_info(**self.dictinfo)
             else:
                 return self.dictinfo
             
-    def acess_backpack(self,Mission):
+    def acess_backpack(self,Mission): # definir se entra com uma interação com missão ou não
         lista =[]
-        lista =self.len_backpack(lista,Mission)
-
+        lista =self.len_backpack(lista)
+        Mission_filter= Mission
         Mission = self.select_item(lista,Mission)
 
-        return Mission
+        if Mission_filter == True:
+            return Mission
+        else:
+            return self.dictinfo
         
 
-    def len_backpack(self,lista,Mission):#Mostrar imagem da mochila
+    def len_backpack(self,lista):#Mostrar imagem da mochila
         lis = [ i for i in self.dictinfo.keys()]
         for i in lis[16:]:
             lista.append(i)
@@ -514,7 +533,8 @@ class Set(MenuTerminal):
         self.__str__('_select_item')
         item = input()
         if item == '0':
-            return self.dictinfo
+            try:return Mission,self.dictinfo
+            except:return self.dictinfo
         item = str(item)+'item'
         strng=''
         for x in lista:
@@ -524,49 +544,54 @@ class Set(MenuTerminal):
                     self.__str__('_select_item0')
                 elif strng[0] == '8' or strng[0] == '5' or strng[0] == '2' or strng[0] == '7' or strng[0] == '4' or strng[0] == '6':
                     self.__str__('_selct_status0')
-                    print("For:{}\nDef:{}\nInt:{}\n".format(self.glogal_itens_status_for[strng],self.glogal_itens_status_def[strng],self.glogal_itens_status_int[strng]))
+                    print("\nFor:{}\nDef:{}\nInt:{}\n".format(self.glogal_itens_status_for[strng],self.glogal_itens_status_def[strng],self.glogal_itens_status_int[strng]))
                     self.__str__('_selct_status1')
-                    x=input()
-                    if x ==1:self.acess_set()
-                    if x ==2:self.BP_Dell(strng)
-                elif strng[0] == '$':
+                    select= int(input())
+                    if select ==1:self.acess_set()
+                    if select ==2:self.BP_Dell(strng)
+                elif strng[0] == '$':  #VER SE NA BACKPACK onde tem $ no iniciodo valor do item é correspondente com o que informamo como Missões
                     self.__str__('_select_item1')
-                    x = int(input())
-                    if  x == int(1) :self.BP_Dell(strng)
-                    if  x == int(2) :
+                    x = int(input()) #seleciona apenas duas opcoes usar e deletar.
+                    if  x == int(1) :self.BP_Dell(strng)  #BP_Dell leva para um algoritimo que irá "deletar" trocando valor do nome para "None" acossiando a um item nulo
+                    if  x == int(2) : #voltar e pegar
                         Mission = self.BP_Use(strng,Mission)
-                        return Mission
-                elif strng[0] == '#':
+                        Mission_filter= Mission
+                        if Mission_filter == True:
+                            return Mission
+                        else:
+                            return Mission
+
+                        
+                elif strng[0] == '#':#VER SE NA BACKPACK onde tem $ no iniciodo valor do item é correspondente com o que informamo como Consumiveis
                     self.__str__('_select_item2')
                     x = int(input())
-                    if  x == 1 :self.BP_Dell(strng)
+                    if  x == 1 :self.BP_Dell(strng)#BP_Dell leva para um algoritimo que irá "deletar" trocando valor do nome para "None" acossiando a um item nulo
                     if  x == 2 :self.BP_Use(strng)
                 del strng
         del item 
-        self.__str__('_select_item3')
-        x=str(input())
-        if x =='y' or x =='Y':
-            self.select_item(lista,Mission)
+    
        
-    def acess_status(self):
+    def acess_status(self): #\/ nossa que inutil dois def pra isso
         self.list_status()
 
     def list_status(self): #vê status
         for i in self.z:
             print(str(i),':',self.dictinfo[i])
     
-    def update_status_item(self,item1,item2): #só faz sentido implementar no momento em que estiver trocando intem, em outro local isso é desnecessario e vulgar
+    def update_status_item(self,item1,item2): #troca de poder item 1 tira, item 2 incrementa.
             self.dictinfo['Def']= (int(self.dictinfo['Def'])-int(self.glogal_itens_status_def[item1]))+int(self.glogal_itens_status_def[item2]) #tirando poder de item 1 e incrementando item_2
             self.dictinfo['For']= (int(self.dictinfo['For'])-int(self.glogal_itens_status_for[item1]))+int(self.glogal_itens_status_for[item2]) #o mesmo para forca
             self.dictinfo['Int']= (int(self.dictinfo['Int'])-int(self.glogal_itens_status_for[item1]))+int(self.glogal_itens_status_for[item2]) # e o mesmo para inteligencia
+            self.save_info(**self.dictinfo)
 
     def update_status_per_lvl(self):
         self.__str__('update_status_per_level')
         update = int(input())
-        if update == 3:self.dictinfo['For']
-        elif update == 1:self.dictinfo['Int']
-        else:self.dictinfo['Def']= int(self.dictinfo['Def'])
-    
+        if update == 3:self.dictinfo['For'] =int(self.dictinfo['For'])+int(1)
+        elif update == 1:self.dictinfo['Int']=int(self.dictinfo['Int'])+int(1)
+        else:self.dictinfo['Def']= int(self.dictinfo['Def'])+1
+        self.save_info(**self.dictinfo)
+
     def BP_Dell(self,item):
         lista = [i for i in self.dictinfo.keys()]
         item = str(item)
@@ -575,23 +600,30 @@ class Set(MenuTerminal):
                 if item[0] == '$':
                     self.__str__('_BP_Dell_0')
                 else:
-                    self.dictinfo == 'None'
-
-    def BP_Use(self,item,Mission):
-        lista = [i for i in self.dictinfo.keys()]
-        item = str(item)
-        for i in lista[16:]:
-            if self.dictinfo[i] == item:
-                
+                    self.dictinfo[item] = 'None'
+                    self.save_info(**self.dictinfo)
+        
+#atualizar def
+    def BP_Use(self,item,Mission): #BP_Use é uma funcao que serve para classificar itens usaveis... tipo porção ou chaves
+        lista = [i for i in self.dictinfo.keys()] #le uma lista de keys do dict do usuario
+        item = str(item) #limpa filtrando o item usado forçando ser STR
+        for i in lista[16:]: #percorre desde a  primeira posição desejada da lista de informações que se refere a posição 16
+            if self.dictinfo[i] == item: #percorre key por key para ver o valor informado do item
+                if item[0] == 'N':
+                    self.__str__('_BP_Use_None')
+                    return None # 
                 if item[0] =='$':
                     if Mission == True:
                         
-                        self.dictinfo[i] == 'None'
-                        Mission = False 
-                        return Mission
+                        self.dictinfo[i] = 'None'
+                        self.save_info(**self.dictinfo) 
+                        return False
+                    else:
+                        self.save_info(**self.dictinfo) 
+                        return self.dictinfo[i]
 
                 if item[0] == '#':
-                    self.dictinfo[i] == 'None'
+                    self.dictinfo[i] = 'None'
                 else:
                     self.__str__('_BP_Use_0')
 
@@ -640,30 +672,31 @@ class Set(MenuTerminal):
                     
         self. loop_search(lista,var,item)
 
+
+
 class UP(Set,MenuTerminal):    
 
-    def __init__(self,language,**dictinfo):
-        Set.__init__(self,language,**dictinfo)
+    def __init__(self,language,local_save,**dictinfo):
+        Set.__init__(self,language,local_save,**dictinfo)
         MenuTerminal.__init__(self,language)
         self.dictinfo = dictinfo
 
-    def __str__(self,string):
-        MenuTerminal(self.language).__str__(string)
+    #def __str__(self,string): # o grasno do pato
+    #    MenuTerminal(self.language).__str__(string)
 
-    def up(self,up):
-        #level_up ={}
-        y = self.dictinfo['Lvl']
-        x = int(MenuTerminal(self.language).infolist(0,y))
-        z = str(self.dictinfo['Xp'])
-        print(z)
-        z = int(z)+int(up)
+    def up(self,up): #UP No personagem, e atualiza seu xp
+        #variavel up responsável por puchar xp acrescentado
+        y = self.dictinfo['Lvl'] #y fica responsavel pelo level
+        x = int(self.infolist(0,y)) #responsável por ver diretamente limite da experiencia até o proximo level do personagem   Alterar
+        z = str(self.dictinfo['Xp']) #pego xp do dict
+        z = int(z)+int(up)# Juntar XP
         while x != -1:
             if int(z) >=int(x):
                 self.update_status_per_lvl()
                 z = int(z)-int(x)
                 y = int(y)+1
                 self.__str__('_UP0') #remover depois:
-                x = MenuTerminal(self.language).infolist(0,y)     #(level_up[str(y)])
+                x = self.infolist(0,y)     #(level_up[str(y)])
             else:
                 y = str(y)
                 self.dictinfo['Lvl']=y
@@ -671,24 +704,7 @@ class UP(Set,MenuTerminal):
                 break        
         del y,z,x
 
-    def life_mana(self,ty,up):
-        aux = int(self.dictinfo[ty])
-        aux = int(aux) - int(up)
-        self.dictinfo[ty]= aux
-        if  ty == 'Hp':
-            if aux <=0:
-                del aux
-                return 1 #informar que acabou a vida
-            else:return 0 #informar que acabou que não acabou
-        elif ty == 'Mp':
-            if aux <0:
-                aux = int(aux) + int(up)
-                self.dictinfo[ty]= aux
-                del aux
-                return 1 #informar que acabou a mana
-            else:return 0 #informar que acabou que não acabou
-
-    def STS(self,ty,up):
+    def STS(self,ty,up): #
         lista =[i for i in self.dictinfo.keys()]
         for i in lista[0:8]:
             if ty in i:
@@ -698,82 +714,133 @@ class UP(Set,MenuTerminal):
                     pass
                 else:
                     self.dictinfo.update({i:str(up)})
+
         return self.dictinfo
 
 
-    def Newxt_Point(self):
+    def Next_Point(self):
         aux =int(self.dictinfo['Point'])
-        aux =+1
+        aux =aux+1
         self.dictinfo['Point'] = aux
+        self.save_info(**self.dictinfo)
+        
 
     def returnpoint(self,i):
 
-        if i == 0:
+        if i == 1:
+            
+            self.__str__('_return')
             aux = int(self.dictinfo['Point'])
-            if aux >=1:
-                aux-=1
+            for i in range(3+1,0,1):
+                time.sleep(1.3)
+                self.__str__('_Point1');print(i,']')
+            input("Press_Enter_to_Continue")
             self.dictinfo['Point']=aux
             self.dictinfo['Hp']=100
             self.dictinfo['Mp']=50
             del aux
+            
+            PointHistory(self.language,self.local_save,**self.dictinfo).historypoint()
 
-        elif i == 1:
-            self.__str__('_mana')
+        else:
+            pass
+            
 
 
 
 class Damage(UP,Set,MenuTerminal):
-    def __init__(self,language,**dictinfo):
-        UP.__init__(self,language,**dictinfo)
-        Set.__init__(self,language,**dictinfo)
+    def __init__(self,language,local_save,**dictinfo):
+        UP.__init__(self,language,local_save,**dictinfo)
+        Set.__init__(self,language,local_save,**dictinfo)
         MenuTerminal.__init__(self,language)
-
-        
+   
 
     def Action_Option(self,Mission):
-        MenuTerminal(self.language).__str__('_actopt_0')
+        self.__str__('_actopt_0')
         tip = 0
         tip=int(input())
         if tip == 1:
-            MenuTerminal(self.language).__str__('_actopt_1');print(self.dictinfo['For'],'>')
-            MenuTerminal(self.language).__str__('_actopt_2');print(self.dictinfo['Int'],'/',self.dictinfo['Mp'],'-Mp>')
-            tip = 0
+            self.__str__('_actopt_1');print(self.dictinfo['For'],'>') #seleção de ataque de Dano
+            self.__str__('_actopt_2');print(self.dictinfo['Int'],'/',self.dictinfo['Mp'],'-Mp>') #seleção de ataque de magia
+            tip = 0     #reutiliza mesma variavel para proxima pergunta
             tip = int(input())
-            if tip == 1:return 0
+
+            if tip == 1:
+                tip = self.damage()
+                return tip
             if tip == 2:
-                x =self.damage_int()
-                return x
+                tip = self.damage_int()
+                return tip
         if tip == 2:return 2
         if tip == 3:
             if Mission == False:
                 self.acess_backpack(Mission)
             if Mission == True:
                 Mission = self.acess_backpack(Mission)
+                
                 return Mission
+            
             return 3
         if tip == 4:
             self.acess_status()
             return 4
         else:return 5
 
+    def damage(self):
+        damage = int(self.dictinfo['For'])
+        return damage
+
+
     def damage_int(self): #652
-        i =self.life_mana('Mp',2)
-        if i == 0:
-            #self.dictinfo['Mp']=self.dictinfo['Mp']-15
-            return 1
+        mana_consume = 5
+        damage_mana = int(self.dictinfo['Int'])
+        mana_have = int(self.dictinfo['Mp'])
+        if mana_have == 0 or (mana_have-mana_consume) <=0:
+            self.__str__('_actopt_3') #não pode voltar mana
+            return 0
+
         else:
-            MenuTerminal(self.language).__str__('_actopt_3')
-            return -1
-    def sense_damage(self,power):
-        power_reflect=int(self.dictinfo['Def'])
-        power_reflect= int(power_reflect)-int(power)
-        i = int(self.life_mana('Hp',power_reflect))
-        if i== 0:
-            self.dictinfo['Hp']=self.dictinfo['Hp']-power_reflect
+            self.life_mana('Mp',5)
+            print(damage_mana)
+            return damage_mana
+
+
+    def sense_damage(self,power_monster): #Voltado as ações do personagem, quando um monstro atacar...
+        power_reflect=int(self.dictinfo['Def']) #pega seus pontos de defesa
+        power_reflect= int(power_monster)-int(power_reflect) #filtra o dano com a defesa que tem
+        if power_reflect >=1:
+            i = int(self.life_mana('Hp',power_reflect)) #aqui Volta um valor boleano caso o personagem tenha ou não a vida abaixada quando decrementar na lista que inclusive ja foi salva
+            if i<= 0: #se 0 significa que tem vida
+                #self.dictinfo['Hp']=self.dictinfo['Hp']-power_reflect
+                return power_reflect
+            else: # se n for 0... significa que acabou sua vida
+                self.death_return(i)
         else:
-            self.death_return(i)
-    
-    def death_return(self,i):
-        MenuTerminal(self.language).__str__('_actopt_4')
-        print("Você Morreu...")
+            self.__str__('Damage')
+            return 0
+
+    def life_mana(self,ty,up): #Ty referencia tipo da lista, Up ele sobe o valor que ira decrementar
+        aux = int(self.dictinfo[ty]) #auxiliar pega o valor contido na lista do usuário
+        aux = int(aux) - int(up) #decrementa
+        self.dictinfo[ty]= aux #atualiza informação do dano para o valor
+        self.save_info(**self.dictinfo) #salva o valor alterado do dicionario do usuario!
+        if  ty == 'Hp': #se for hp 
+            if aux <=0:
+                del aux
+                return 1 #informar que acabou a vida
+            else:return 0 #informar que acabou que não acabou
+        if ty == 'Mp':
+            if aux <0:
+                aux = int(aux) + int(up)
+                self.dictinfo[ty]= aux
+                del aux
+                return 1 #informar que acabou a mana
+            else:return 0 #informar que acabou que não acabou
+
+
+    def death_return(self,i): #vida acabada, voltar pro ponto de origem, mas primeiro tem que resetar a mana e a vida
+        self.__str__('_actopt_4')
+
         self.returnpoint(i)
+
+from Point import *

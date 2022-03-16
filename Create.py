@@ -1,5 +1,6 @@
 
 from Terminal import *
+from Menu import*
 
 class Create_char(MenuTerminal):
 

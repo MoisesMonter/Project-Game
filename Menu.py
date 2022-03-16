@@ -1,13 +1,15 @@
+from numpy import save
 from Terminal import*
 from ballon import*
 from config import Config_Menu
-from Create import Create_char
+import os
+from Create import *
+class NewGame(Create_char,MenuTerminal):
 
-class NewGame(MenuTerminal):
-
-    def __init__(self,language):
+    def __init__(self,language,new_game):
+        Create_char.__init__(self,language,new_game)
         MenuTerminal.__init__(self,language)
-        self.new_game = int #reposnsavel por pegar o valor da posição do save que irá implementar
+        
         self.action = ''         #uma string que definirar um simples sim e não para o save
         self.select = ''         #uma string que irá direcionar o local do save.
 
@@ -15,7 +17,7 @@ class NewGame(MenuTerminal):
         self.select = str("save//save"+str(self.new_game)+".txt") 
 
     def NewGame(self):
-        MenuTerminal(self.language).__str__('_def_NG_0') #BALÃO DE COMENTARIO Geral
+        self.__str__('_def_NG_0') #BALÃO DE COMENTARIO Geral
         self.new_game = int(input())
         self.Local()        #encaminhará junto com self.select, gerará o nome para o diretório que será acessado
 
@@ -31,22 +33,22 @@ class NewGame(MenuTerminal):
             
             try:     #verifica se ao caminho já existe conteúdo 
                 with open(self.select, 'r'):
-                    MenuTerminal(self.language).__str__('_def_Select_0') 
+                    self.__str__('_def_Select_0') 
                 self.DelSave()          #encaminhará a seleção de deletamento
                 return self.new_game
             except:
                 with open(self.select, 'w'):    #cria a pasta txt do save
                     pass
-                Create_char(self.language,self.new_game).create_account()
+                self.create_account()
                 return self.new_game  #Retorna numero da posição do jogo salvo para o Terminal  
         else:
-            MenuTerminal(self.language).__str__('_def_Select_1')  
+            self.__str__('_def_Select_1')  
         
         
 
 
     def DelSave(self): #junto com action você definirá se quer remover o save.txt
-        MenuTerminal(self.language).__str__('_def_DelSave_0')
+        self.__str__('_def_DelSave_0')
         self.action =input()
         self.action = self.action.lower()
         if self.action == 'y' or self.action == 'ye' or self.action == 'yes' or self.action == 'yep':
@@ -55,16 +57,16 @@ class NewGame(MenuTerminal):
             except OSError as e:
                 print(e)    #caso haja algum erro, apresentará inexistencia da pasta (para casos especifivos e raros de manipulação de terminal e manual)
             else:
-                MenuTerminal(self.language).__str__('_def_DelSave_1') #Balão Exclusão Concluido
+                self.__str__('_def_DelSave_1') #Balão Exclusão Concluido
                 del self.action,self.select,self.new_game
 
         elif self.action == 'n' or self.action == 'no' or self.action == 'not' or self.action == 'nop' or self.action == 'not' or self.action == 'noti' or self.action == 'notin' or self.action == 'noting':
-            MenuTerminal(self.language).__str__('_def_DelSave_2')             #Caso usuário desista, simplesmente não fazer nada
+            self.__str__('_def_DelSave_2')             #Caso usuário desista, simplesmente não fazer nada
             del self.action,self.select,self.new_game 
         else:
-            MenuTerminal(self.language).__str__('_def_DelSave_3')   #caso as duas opções não sejam atendidas, simplesmente mandar um balão notificando que não foi entendido 
+            self.__str__('_def_DelSave_3')   #caso as duas opções não sejam atendidas, simplesmente mandar um balão notificando que não foi entendido 
             del self.action,self.select,self.new_game
-        MenuTerminal(self.language).limpesa_global()
+        self.limpesa_global()
         self.Select()
     
     def Verify_Past(self): #verificação simples da pasta
@@ -75,9 +77,9 @@ class NewGame(MenuTerminal):
         if os.path.exists("./save") == True:
             for i in range(1,5,1):
                 if os.path.exists(x+"/save"+str(i)+".txt") == True:
-                    print(GREEN,end='');MenuTerminal(self.language).__str__('_def_New_Verify_Past_0');print(' [',i,']'+RESET+':',end='');print(GREEN,end='');MenuTerminal(self.language).__str__('_def_New_Verify_Past_1');print(RESET+'.')
+                    print(GREEN,end='');self.__str__('_def_New_Verify_Past_0');print(' [',i,']'+RESET+':',end='');print(GREEN,end='');self.__str__('_def_New_Verify_Past_1');print(RESET+'.')
                 else:
-                    print(RED,end='');MenuTerminal(self.language).__str__('_def_New_Verify_Past_0');print(' [',i,']'+RESET+':',end='');print(RED,end='');MenuTerminal(self.language).__str__('_def_New_Verify_Past_2');print(RESET+'.')
+                    print(RED,end='');self.__str__('_def_New_Verify_Past_0');print(' [',i,']'+RESET+':',end='');print(RED,end='');self.__str__('_def_New_Verify_Past_2');print(RESET+'.')
         else:
             os.makedirs(x)
         del x,GREEN,RED,RESET
@@ -89,11 +91,9 @@ class LoadGame(MenuTerminal):
         MenuTerminal.__init__(self,language)
         self.select = ''
 
-    def Load_save(self):
-        self.verify_past()
-        return self.select
+
     
-    def verify_past(self):
+    def verify_load_past(self):
         CYAN = "\033[1;36m"
         RED   = "\033[1;31m" 
         RESET= "\033[0;0m"
@@ -102,21 +102,23 @@ class LoadGame(MenuTerminal):
 
             for i in range(1,5,1): #vai entrar em um laço for e printar na tela caso haja algum save.
                 if os.path.exists("./save/save"+str(i)+".txt") == True:
-                    print(CYAN);MenuTerminal(self.language).__str__('_def_Verify_Past_0');print(RESET,'[',end='');print(CYAN,i,end='');print(RESET,']',end='')
+                    print(CYAN);self.__str__('_def_Verify_Past_0');print(RESET,'[',end='');print(CYAN,i,end='');print(RESET,']',end='')
                     local_necessary_array.append(i) #incrementando valor na array
                 else:
-                    print(RED);MenuTerminal(self.language).__str__('_def_Verify_Past_0');print(RESET,'[',end='');print(RED,i,end='');print(RESET,']',end='')
+                    print(RED);self.__str__('_def_Verify_Past_0');print(RESET,'[',end='');print(RED,i,end='');print(RESET,']',end='')
                     #Mostrando que não há arquivos salvos
         else:
-            MenuTerminal(self.language).__str__('_def_Verify_Past_1')  #DECLARA QUE PASTA NÃO EXISTE
+            self.__str__('_def_Verify_Past_1')  #DECLARA QUE PASTA NÃO EXISTE
             return 0
             
-        i = self.Select(local_necessary_array)
+        i = self.Select_load(local_necessary_array)
+        print(i)
         del CYAN,RESET,RED
+        return i
 
     
-    def Select(self,array):
-        MenuTerminal(self.language).__str__('_def_Select_0')
+    def Select_load(self,array):
+        self.__str__('_def_Select_0')
         while len(self.select) != '-1':
             self.select = input()
             if self.select == '0':
@@ -125,62 +127,70 @@ class LoadGame(MenuTerminal):
                 if str(self.select) == str(x):
                     return self.select
 
-class configuration(MenuTerminal):
+    def Load_save(self):
+        self.verify_load_past()
+        return self.select
+
+class configuration(Config_Menu,MenuTerminal):
 
     def __init__(self,language):
         MenuTerminal.__init__(self,language)
 
     def select(self):
-        MenuTerminal(self.language).__str__('_def_select_0')
-        MenuTerminal(self.language).__str__('_def_select_1')
+        self.__str__('_def_select_0')
+        self.__str__('_def_select_1')
         
         i =int(input())
         if i <=1 and i >=0:
-            Config_Menu().Reconf_languages(i)
+            self.Reconf_languages(i)
             return i
         else:
-            MenuTerminal(self.language).__str__('_def_select_2')
+            self.__str__('_def_select_2')
             return self.language
 
 
-class Initial_Menu(MenuTerminal):
+class Initial_Menu(NewGame,LoadGame,configuration,MenuTerminal):
 
-    def __init__(self,language):
+    def __init__(self,language,newgame):
+        NewGame.__init__(self,language,newgame)
+        LoadGame.__init__(self,language)
+        configuration.__init__(self,language)
         MenuTerminal.__init__(self,language)
-
-    def __str__(self):
+    def __newstr__(self):
         print (".==================================================================================================================================.",end='')
-        print ("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t 1-",end='');MenuTerminal(self.language).__str__('new')
-        print ("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t 2-",end='');MenuTerminal(self.language).__str__('load')
-        print ("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t 3-",end='');MenuTerminal(self.language).__str__('config')
-        print ("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t 4-",end='');MenuTerminal(self.language).__str__('exit')
+        print ("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t 1-",end='');self.__str__('new')
+        print ("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t 2-",end='');self.__str__('load')
+        print ("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t 3-",end='');self.__str__('config')
+        print ("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t 0-",end='');self.__str__('exit')
         print ("\n.==================================================================================================================================.")
 
 
     def Do_it(self):
         i = ''
         while i != '4':
-            self.__str__()
+            self.__newstr__()
             i = input()
-            MenuTerminal(self.language).limpesa_global()
+            self.limpesa_global()
             if i == '1':
 
-                select_game =NewGame(self.language).Select()
+                select_game =self.Select()
                 for x in range(1,5,1):
                     if int(select_game) == int(x):
                         return select_game
                 
             elif i == '2':
-                select_game =LoadGame(self.language).Load_save()
+                select_game =self.Load_save()
                 for x in range(1,5,1):
                     if int(select_game) == int(x):
                         return select_game
 
             elif i == '3':
                 self.language = configuration(self.language).select()
-            MenuTerminal(self.language).__str__('press')   
+            elif i == '0':
+                sys.exit()
+            self.__str__('press')   
             input()
-            MenuTerminal(self.language).limpesa_global()
+            self.limpesa_global()
 
     
 '''if (__name__) == "__main__": #menu.

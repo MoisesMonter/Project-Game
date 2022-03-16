@@ -32,57 +32,5 @@ from ballon import* #< hierarquia /\ não pode estar a cima
 from info_person import * #< Hierarquia de poder tem que ficar a baixo do MenuTerminal
 from info_list import* # Para Hierarquia funcionar  nos codigos tem que informar como se sua existencia viesse a baixo do codigo para Herança funcionar em cadeia
 
-'''if __name__ == "__main__":
-    MenuTerminal(0).limpesa_global()
-
-    Config_Menu().conf_languages()
-    language = MenuTerminal(Config_Menu().loading_lang()).Language()
-    i = Initial_Menu(0).Do_it()
-    if i == 4:
-        sys.exit(0)
-    MenuTerminal(0).limpesa_global()
-    print("ACCOUNT-",i,"-LINK START!")
-    Dictlocal={}
-    Dictlocal = Person(language,i).alocate_info()
-    #Dictlocal = Set(language,**Dictlocal).acess_status()
-    Dictlocal = Set(language,**Dictlocal).acess_backpack()
-    
-    x = input("você encontra o primeiro monstro...decide atacar:(s/n)")
-    if x == 's':
-        print("Ele bateu em você...")
-        Dictlocal = UP(language,**Dictlocal).STS('Hp','60')
-        #Dictlocal.update({'Hp':'-20'})
-        print("você usou magia E DEU CRITICO..")
-        Dictlocal = UP(language,**Dictlocal).STS('Mp','35')
-        print("Nossa você conseguiu !!100!! bônus de experiencia. Parabéns")
-        Dictlocal = UP(language,**Dictlocal).STS('Xp','100')
-
-        #Dictlocal.update({'Xp':'20'})
-        x =input("Ele deixou cair uma espada enferrujada...Deseja pega-lo(s/n):")
-        if x == 's' or x=='S':
-            Dictlocal = Set(language,**Dictlocal).take('6_right11')
-            print("Vamos ver como está teus status!\n")
-            Dictlocal = Set(language,**Dictlocal).acess_status()
-    else:
-        print("você foge...")
-        #Dictlocal = SET(**Dictlocal).BP()
-    x =input("Deseja acessar seu Set(s/n)::")
-    if x =='s' or x=='S' or x==1:
-        Dictlocal = Set(language,**Dictlocal).acess_set()
-
-
-
-    x = input("Você Deseja ver suas informações?:(s/n)!")
-    if x =='s':
-        print("SUAS INFORMAÇÕES ESTÃO CONTIDAS EM UM DICTIONARY: VEJAZ>\n",Dictlocal)
-    elif x =='n':
-        print("você decidiu não ver...")
-    print("okay")
-    
-    Dictlocal= Person(language,i).save_info(**Dictlocal)
-    print("<Salvo>\n")'''
-
-    
-
 
     
