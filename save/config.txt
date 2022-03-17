@@ -1,1 +1,1 @@
-Language: 1 (alter it is simple, modify 0 - 1 only ||0-En-US||1-Pt-BR||
+Language: 0 (alter it is simple, modify 0 - 1 only ||0-En-US||1-Pt-BR||

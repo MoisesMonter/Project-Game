@@ -23,14 +23,15 @@ class Config_Menu:
         
 
     def Reconf_languages(self,boolean):     #responsável por identificar a linguagem e já deixar salvo em um arquivo
+        print(boolean)
         try:
             with open(self.locale+self.archive, 'r'):
-                if(boolean == True):
+                if int(boolean) == 1:
                     with open(self.locale+self.archive, mode='w',encoding='utf-8') as archives:
                         archives.write("Language: 1 (alter it is simple, modify 0 - 1 only ||0-En-US||1-Pt-BR||\n")
                         return 1
-                elif(boolean == False):
-                    print("false")
+                elif int(boolean) == 0:
+
                     with open(self.locale+self.archive, mode='w',encoding='utf-8') as archives:
                         archives.write("Language: 0 (alter it is simple, modify 0 - 1 only ||0-En-US||1-Pt-BR||\n")
                         return 0
@@ -41,7 +42,7 @@ class Config_Menu:
 
 
 
-    def loading_lang(self):                             #resposável por interpretar se haja alguma mudança manual no proprio arquivo save
+    def loading_lang(self):        #resposável por interpretar se haja alguma mudança manual no proprio arquivo save
         fix=["Language: 0 (alter it is simple, modify 0 - 1 only ||0-En-US||1-Pt-BR||\n","Language: 1 (alter it is simple, modify 0 - 1 only ||0-En-US||1-Pt-BR||\n"]
         try:
             with open(self.locale+self.archive, mode='r', encoding='utf-8') as archive:
@@ -62,7 +63,7 @@ class Config_Menu:
 
 
         except:
-            Config_Menu().conf_languages()
+            self.conf_languages()
         del fix
             
 

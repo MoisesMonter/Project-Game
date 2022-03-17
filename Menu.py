@@ -4,46 +4,43 @@ from ballon import*
 from config import Config_Menu
 import os
 from Create import *
-
-
 class NewGame(Create_char,MenuTerminal):
 
-    def __init__(self,language,save):
-        Create_char.__init__(self,language,save)
+    def __init__(self,language,new_game):
+        Create_char.__init__(self,language,new_game)
         MenuTerminal.__init__(self,language)
-        
         
         self.action = ''         #uma string que definirar um simples sim e não para o save
         self.select = ''         #uma string que irá direcionar o local do save.
 
     def Local(self): #simples local para gerar nome local do arquivo acessado em txt em seu diretório final especificado
-        self.select = str("save//save"+str(self.save)+".txt") 
+        self.select = str("save//save"+str(self.new_game)+".txt") 
 
     def NewGame(self):
         self.__str__('_def_NG_0') #BALÃO DE COMENTARIO Geral
-        self.save = int(input())
+        self.new_game = int(input())
         self.Local()        #encaminhará junto com self.select, gerará o nome para o diretório que será acessado
 
     def Select(self):   
         self.Verify_Past()#encaminhará a verificação da pasta
         self.NewGame()
 
-        if self.save == 0:
+        if self.new_game == 0:
             return 0
 
-        if self.save >=1 and 5 > self.save:
+        if self.new_game >=1 and 5 > self.new_game:
 
             
             try:     #verifica se ao caminho já existe conteúdo 
                 with open(self.select, 'r'):
                     self.__str__('_def_Select_0') 
                 self.DelSave()          #encaminhará a seleção de deletamento
-                return self.save
+                return self.new_game
             except:
                 with open(self.select, 'w'):    #cria a pasta txt do save
                     pass
                 self.create_account()
-                return self.save  #Retorna numero da posição do jogo salvo para o Terminal  
+                return self.new_game  #Retorna numero da posição do jogo salvo para o Terminal  
         else:
             self.__str__('_def_Select_1')  
         
@@ -61,14 +58,14 @@ class NewGame(Create_char,MenuTerminal):
                 print(e)    #caso haja algum erro, apresentará inexistencia da pasta (para casos especifivos e raros de manipulação de terminal e manual)
             else:
                 self.__str__('_def_DelSave_1') #Balão Exclusão Concluido
-                del self.action,self.select,self.save
+                del self.action,self.select,self.new_game
 
         elif self.action == 'n' or self.action == 'no' or self.action == 'not' or self.action == 'nop' or self.action == 'not' or self.action == 'noti' or self.action == 'notin' or self.action == 'noting':
             self.__str__('_def_DelSave_2')             #Caso usuário desista, simplesmente não fazer nada
-            del self.action,self.select,self.save 
+            del self.action,self.select,self.new_game 
         else:
             self.__str__('_def_DelSave_3')   #caso as duas opções não sejam atendidas, simplesmente mandar um balão notificando que não foi entendido 
-            del self.action,self.select,self.save
+            del self.action,self.select,self.new_game
         self.limpesa_global()
         self.Select()
     
@@ -86,6 +83,7 @@ class NewGame(Create_char,MenuTerminal):
         else:
             os.makedirs(x)
         del x,GREEN,RED,RESET
+
 
 class LoadGame(MenuTerminal):
 
@@ -136,6 +134,7 @@ class LoadGame(MenuTerminal):
 class configuration(Config_Menu,MenuTerminal):
 
     def __init__(self,language):
+        Config_Menu.__init__(self)
         MenuTerminal.__init__(self,language)
 
     def select(self):
@@ -151,12 +150,13 @@ class configuration(Config_Menu,MenuTerminal):
             return self.language
 
 
-class Initial_Menu(NewGame,LoadGame,configuration,MenuTerminal):
+class Initial_Menu(NewGame,configuration,LoadGame,MenuTerminal):
 
     def __init__(self,language,newgame):
         NewGame.__init__(self,language,newgame)
-        LoadGame.__init__(self,language)
         configuration.__init__(self,language)
+        LoadGame.__init__(self,language)
+        
         MenuTerminal.__init__(self,language)
     def __newstr__(self):
         print (".==================================================================================================================================.",end='')
